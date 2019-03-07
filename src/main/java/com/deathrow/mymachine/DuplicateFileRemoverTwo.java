@@ -19,6 +19,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JProgressBar;
 import java.util.List;
+import java.util.Arrays;
+import java.util.ArrayList;
 import javax.swing.SwingWorker;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -79,7 +81,7 @@ public class DuplicateFileRemoverTwo{
         protected void process(List<Integer> chunks) {
             int i = chunks.get(chunks.size()-1);
             jpb.setValue(i); // The last value in this array is all we care about.
-            label.setText("Loading " + i + "%  of  " + max +"%" );
+            label.setText("Loading " + i + "%          ");
         }
 
         @Override
@@ -92,7 +94,8 @@ public class DuplicateFileRemoverTwo{
 				int fileUnique = 1;
 				int fileUniqNonUniq = 1;
 				fileSize = fileList.length;  
-	            System.out.println("Total Number Of Files : "  + fileSize);   
+	            System.out.println("Total Number Of Files : "  + fileSize);
+	            System.out.println("fileList : " + Arrays.toString(fileList));
 				
 				// rowUnique.clear();
 				for(File oneFile : fileList){
@@ -202,14 +205,11 @@ public class DuplicateFileRemoverTwo{
 	public HashMap<String, String> getHashmap() {
 		return hashmap;
 	}
+	// - Core i3/i5 + Pentium G9650 Processors
 
 	public Vector<Vector<String>> getRowUnique() {
 		return rowUnique;
 	}
-
-	public int getFileCount() {
-    	return fileCount;
-  	}
 	
 	public  void delDuplicates(boolean state){
 		if(state == true){

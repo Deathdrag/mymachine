@@ -9,14 +9,10 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
-import java.awt.event.MouseListener;
-import java.awt.event.MouseEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.awt.Image;
 import java.awt.Color;
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
 import java.awt.GridLayout;
 
 import javax.swing.JPanel;
@@ -28,40 +24,30 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
-import javax.swing.BorderFactory;
-import javax.swing.border.EtchedBorder;
-import javax.swing.JDesktopPane;
-import javax.swing.ImageIcon;
 import javax.swing.table.DefaultTableModel;
 
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.time.LocalDate;
-import java.time.Month;
-import java.time.Clock;
-import java.time.Duration;
-import java.time.YearMonth;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
-import java.util.logging.Level;
 import javax.swing.JComboBox;
-import javax.swing.JProgressBar;
 import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
+
+import java.security.MessageDigest;
+import java.util.Base64.Encoder;
+import java.util.Base64;
 
 import java.io.File;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import org.apache.commons.io.FilenameUtils;
-
-import com.dewcis.utils.tableModel;
 
 public class mainDesk extends JPanel implements  ActionListener{
-	Logger log = Logger.getLogger(mainDesk.class.getName());
+	static final Logger log = Logger.getLogger(mainDesk.class.getName());
 
 	Connection db = null;
 	String mySql = "";
@@ -70,33 +56,38 @@ public class mainDesk extends JPanel implements  ActionListener{
 	List<JTextField> txfs;
 	List<JComboBox> cmbs;
 
-	public  HashMap<String, String> hashmapFilesMP4 = new HashMap<String, String>();
+	public  HashMap<String, String> hashmapFilesMP4 = new HashMap<>();
 	
 	Map<String, String> fields;
 	List<String> fieldNames;
-
-	Vector<Vector<String>>  rowUnique,rowMove;
+	Vector<Vector<String>>  rowUnique = new Vector<Vector<String>>();
+	Vector<Vector<String>>  rowMove;
 	Vector<String> columnMove,columnUnique;
 
 	String folderToScan=null, folderToSearch= null,folderTo=null;
 	String errorMessage ="";
 	JFileChooser jFolder;
+	File[] fileList = null;
 	int fileCount = 1;
 	int dupCount = 0;
 	private static JDialog d;
 
 	JTabbedPane tabbedPane = new JTabbedPane();
 	JTabbedPane searchPane = new JTabbedPane();
+	AutoDetect2 auto = new AutoDetect2();
 	FileSearchName mov = new FileSearchName();
 	DuplicateFileRemoverTwo dup = new DuplicateFileRemoverTwo();
-	JPanel nonRegPanel, dupPanel, mp3Panel, movePanel, logPanel, filterPanel, duplPanel, uniPanel;
-	JPanel bttnMvPanel, buttonPanel, mvPanel, bttnMp3Panel, statusPanel, devicePanel, searchPanel;
+	Mp3ToMp4 mp3 = new Mp3ToMp4();
+	JPanel nonRegPanel, dupPanel, mp3Panel, movePanel, moveFilePanel, filterPanel, duplPanel, uniPanel;
+	JPanel bttnMvPanel, buttonPanel, mvPanel, bttnMp3Panel, bttnMoveFilePanel, devicePanel, searchPanel;
 	JTable tableReg, tableNon, tableUniq,	tableMv;
 	DefaultTableModel mvModel, uniqModel;
 
 	public mainDesk(Connection db) {
 		super(new BorderLayout());
 		this.db = db;
+
+		new Task_IntegerUpdate().execute();
 
 		btns = new ArrayList<JButton>();
 		txfs = new ArrayList<JTextField>();
@@ -159,8 +150,18 @@ public class mainDesk extends JPanel implements  ActionListener{
 		movePanel.add(scrollPaneMove, BorderLayout.CENTER);
 
 		// //log user panel
-		// logPanel = new JPanel(new BorderLayout());
-		// tabbedPane.addTab("users Logs", logPanel);
+		moveFilePanel = new JPanel(new BorderLayout());
+		tabbedPane.addTab("Move Files to respective Folders", moveFilePanel);
+
+		bttnMoveFilePanel = new JPanel(new GridLayout(0, 2));
+
+		addButton("File Select", 150, 20, 100, 25, true);
+		addButton("Convert", 300, 20, 150, 25, true);
+
+		bttnMoveFilePanel.add(btns.get(6));
+		bttnMoveFilePanel.add(btns.get(7));
+
+		moveFilePanel.add(bttnMoveFilePanel, BorderLayout.PAGE_END);
 
 		mp3Panel = new JPanel(new BorderLayout());
 		tabbedPane.addTab("Convert Files to MP3", mp3Panel);
@@ -170,8 +171,8 @@ public class mainDesk extends JPanel implements  ActionListener{
 		addButton("File Select", 150, 20, 100, 25, true);
 		addButton("Convert", 300, 20, 150, 25, true);
 
-		bttnMp3Panel.add(btns.get(6));
-		bttnMp3Panel.add(btns.get(7));
+		bttnMp3Panel.add(btns.get(8));
+		bttnMp3Panel.add(btns.get(9));
 
 		columnUnique = new Vector<String>();
 		columnUnique.add("Number"); columnUnique.add("Files"); columnUnique.add("Size"); columnUnique.add("File Type");
@@ -185,6 +186,31 @@ public class mainDesk extends JPanel implements  ActionListener{
 
 		super.add(tabbedPane, BorderLayout.CENTER);
 	}
+
+
+	class Task_IntegerUpdate extends SwingWorker<Void, Integer> {
+
+		public Task_IntegerUpdate() {
+        }
+
+        @Override
+        protected void process(List<Integer> chunks) {
+            int i = chunks.get(chunks.size()-1);
+        }
+
+        @Override
+        protected Void doInBackground(){
+
+	    auto.autoDetect2();
+
+            return null;
+        }
+
+        @Override
+        protected void done() {
+            
+        }
+    }
 
 	public void addButton(String btTitle, int x, int y, int w, int h, boolean enabled) {
 		JButton btn = new JButton(btTitle);
@@ -226,7 +252,12 @@ public class mainDesk extends JPanel implements  ActionListener{
             } 
 			
 		}else if(ev.getActionCommand().equals("Scan Duplicate")) {
-	        dup.dupScan(folderToScan);
+			if (folderToScan == null) {
+				JOptionPane.showMessageDialog(null,"You have not yet Select a folder to be scanned","Error",JOptionPane.ERROR_MESSAGE );
+			}else{
+				dup.dupScan(folderToScan);
+			}
+	        
         }else if(ev.getActionCommand().equals("Delete Duplicate")) {
 
         	int a=JOptionPane.showConfirmDialog(null, "Are you sure? You want to Delete", "Delete", JOptionPane.YES_NO_OPTION);
@@ -322,32 +353,33 @@ public class mainDesk extends JPanel implements  ActionListener{
 				}  
 			}
         }else if(ev.getActionCommand().equals("File Select")) {
-			JFileChooser chooser = new JFileChooser();
-			chooser.setMultiSelectionEnabled(true);
-			chooser.showOpenDialog(null);
-			File[] fileList = chooser.getSelectedFiles();
-			Vector<String> row = new Vector<String>();
-			rowUnique = new Vector<Vector<String>>();
-			int fileUniqNonUniq = 1;
-			for(File oneFile : fileList){
-				if(oneFile.isFile()){
-					String duplicate = oneFile.getAbsolutePath();
-					hashmapFilesMP4.put(Integer.toString(dupCount++),duplicate);
-					row.add(Integer.toString(fileUniqNonUniq++));
-					row.add(oneFile.getName());
-					long n2 = oneFile.length();
-					row.add(dup.format(n2,0));
-					row.add(getFileExtension(oneFile));
-					rowUnique.add(row);
-				}
-				
-			}
 
-			uniqModel.setDataVector(rowUnique, columnUnique);
-			tableUniq.repaint();
-			tableUniq.revalidate();
-
-			System.out.println("fileList : " + Arrays.toString(fileList));
+            JFileChooser chooser = new JFileChooser();
+            chooser.setMultiSelectionEnabled(true);
+            chooser.showOpenDialog(null);
+            fileList = chooser.getSelectedFiles();
+            int fileSize = fileList.length;
+            System.out.println("file number =  " + fileSize);
+            int fileCount = 0;
+            int fileUniqNonUniq = 1;
+            for(File oneFile : fileList){
+                if(oneFile.isFile()){
+                    // String filePath = oneFile.getAbsolutePath();
+                    // hashmapFilesMP4.put(Integer.toString(fileCount++),filePath);
+                    Vector<String> row = new Vector<String>();
+                    row.add(Integer.toString(fileUniqNonUniq++));
+                    row.add(oneFile.getName());
+                    long n2 = oneFile.length();
+                    row.add(dup.format(n2,0));
+                    row.add(getFileExtension(oneFile));
+                    rowUnique.add(row);
+                }
+                
+            }
+            uniqModel.setDataVector(rowUnique, columnUnique);
+            
+        }else if(ev.getActionCommand().equals("Convert")) {
+        	mp3.mp3mp4(fileList);
         }
 	}
 	

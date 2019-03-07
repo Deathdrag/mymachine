@@ -6,7 +6,7 @@ import javax.swing.filechooser.FileSystemView;
 
 public class AutoDetect2 {
 
-    public static void autoDetect2() {
+public static void autoDetect2() {
     String[] letters = new String[]{ "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", 
                                     "N", "O" , "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
     File[] drives = new File[letters.length];
@@ -53,8 +53,9 @@ public class AutoDetect2 {
         catch (InterruptedException e) { /* do nothing */ }
 
         }
-    }
-    public static String format(double bytes, int digits) {
+}
+
+public static String format(double bytes, int digits) {
         String[] dictionary = { "bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
         int index = 0;
         for (index = 0; index < dictionary.length; index++) {
@@ -64,6 +65,6 @@ public class AutoDetect2 {
             bytes = bytes / 1024;
         }
         return String.format("%." + digits + "f", bytes) + " " + dictionary[index];
-    }
+}
     
 }
