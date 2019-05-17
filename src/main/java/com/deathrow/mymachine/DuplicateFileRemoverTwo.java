@@ -95,7 +95,7 @@ public class DuplicateFileRemoverTwo{
 				int fileUniqNonUniq = 1;
 				fileSize = fileList.length;  
 	            System.out.println("Total Number Of Files : "  + fileSize);
-	            System.out.println("fileList : " + Arrays.toString(fileList));
+	            // System.out.println("fileList : " + Arrays.toString(fileList));
 				
 				// rowUnique.clear();
 				for(File oneFile : fileList){

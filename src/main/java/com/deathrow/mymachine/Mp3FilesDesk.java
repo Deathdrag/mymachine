@@ -71,10 +71,10 @@ public class Mp3FilesDesk implements ActionListener {
 	Vector<String> columnUnique;
 	Vector<Vector<String>>  rowUnique;
 
-	public Mp3FilesDesk(Vector<Vector<String>>  rowUnique) {
+	public Mp3FilesDesk() {
 		
 		btns = new ArrayList<JButton>();
-		this.rowUnique = rowUnique;
+		// this.rowUnique = rowUnique;
 		dupPanel = new JPanel(new BorderLayout());
 		tabbedPane.addTab("Mp3 Files", dupPanel);
 
@@ -84,14 +84,14 @@ public class Mp3FilesDesk implements ActionListener {
 
 		dupPanel.add(buttonPanel, BorderLayout.PAGE_END);
 
-		columnUnique = new Vector<String>();
-		columnUnique.add("Number"); columnUnique.add("File Name"); columnUnique.add("Size"); columnUnique.add("Type");
+		// columnUnique = new Vector<String>();
+		// columnUnique.add("Number"); columnUnique.add("File Name"); columnUnique.add("Size"); columnUnique.add("Type");
 
-		uniqModel = new DefaultTableModel(rowUnique,columnUnique);
-		// uniqModel.setDataVector(rowUnique, columnUnique);
-		tableUniq = new JTable(uniqModel);
-		JScrollPane scrollPaneDupl = new JScrollPane(tableUniq);
-		dupPanel.add(scrollPaneDupl, BorderLayout.CENTER);
+		// uniqModel = new DefaultTableModel(rowUnique,columnUnique);
+		// // uniqModel.setDataVector(rowUnique, columnUnique);
+		// tableUniq = new JTable(uniqModel);
+		// JScrollPane scrollPaneDupl = new JScrollPane(tableUniq);
+		// dupPanel.add(scrollPaneDupl, BorderLayout.CENTER);
 
 		
 		// Load on main form

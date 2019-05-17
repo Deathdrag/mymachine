@@ -9,6 +9,8 @@
     <url>http://maven.apache.org</url>
 
     <properties>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -23,15 +25,34 @@
                 <enabled>true</enabled>
             </snapshots>
         </repository>
+        <repository>
+            <id>xuggle repo</id>
+            <url>http://xuggle.googlecode.com/svn/trunk/repo/share/java/</url>
+        </repository>
     </repositories>
 
     <dependencies>
+        <dependency>
+            <groupId>com.google.appengine</groupId>
+            <artifactId>appengine-remote-api</artifactId>
+            <version>1.9.64</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.appengine</groupId>
+            <artifactId>appengine-api-1.0-sdk</artifactId>
+            <version>1.9.64</version>
+        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>3.8.1</version>
             <scope>test</scope>
         </dependency>
+        <!-- <dependency>
+           <groupId>xuggle</groupId>
+           <artifactId>xuggle-xuggler</artifactId>
+           <version>5.2</version>
+        </dependency> -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
@@ -96,11 +117,6 @@
         </dependency>
         <dependency>
             <groupId>edu.cmu.sphinx</groupId>
-            <artifactId>sphinx4-parent</artifactId>
-            <version>5prealpha-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>edu.cmu.sphinx</groupId>
             <artifactId>sphinx4-core</artifactId>
             <version>5prealpha-SNAPSHOT</version>
         </dependency>
@@ -112,7 +128,25 @@
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src\main\resources</directory>
+            </resource>
+        </resources>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.0.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -120,6 +154,7 @@
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
+                    <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
             <plugin>
@@ -151,14 +186,52 @@
                             <goal>copy-dependencies</goal>
                         </goals>
                         <configuration>
+                            <excludeArtifactIds> junit </excludeArtifactIds>
                             <outputDirectory>${project.build.directory}/lib</outputDirectory>
-                            <overWriteReleases>false</overWriteReleases>
+                            <!-- <overWriteReleases>false</overWriteReleases>
                             <overWriteSnapshots>false</overWriteSnapshots>
-                            <overWriteIfNewer>true</overWriteIfNewer>
+                            <overWriteIfNewer>true</overWriteIfNewer> -->
+                            <useBaseVersion>false</useBaseVersion>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
+            <!--  <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.9</version>
+                <executions>
+                  <execution>
+                    <id>build-classpath</id>
+                    <phase>generate-sources</phase>
+                    <goals>
+                      <goal>build-classpath</goal>
+                    </goals>
+                    <configuration>
+                      <outputFile>${cpfile}</outputFile>
+                    </configuration>
+                  </execution>
+                </executions>
+              </plugin> -->
+              <!-- <plugin>
+                  <groupId>org.codehaus.gmaven</groupId>
+                  <artifactId>gmaven-plugin</artifactId>
+                  <version>1.4</version>
+                  <executions>
+                    <execution>
+                      <phase>generate-resources</phase>
+                      <goals>
+                        <goal>execute</goal>
+                      </goals>
+                      <configuration>
+                        <source>
+                          def file = new File(project.properties.cpfile)
+                          project.properties.cp = file.getText()
+                        </source>
+                      </configuration>
+                    </execution>
+                  </executions>
+                </plugin> -->
         </plugins>
     </build>
 </project>

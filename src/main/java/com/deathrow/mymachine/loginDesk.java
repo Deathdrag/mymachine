@@ -73,7 +73,7 @@ public class loginDesk implements ActionListener {
 		frame = new JFrame("Deathrow Project");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().add(imagePanel, BorderLayout.CENTER);
-		frame.setSize(900, 600);
+		frame.setSize(900, 700);
 		frame.setVisible(true);
 	}
 	
@@ -86,7 +86,7 @@ public class loginDesk implements ActionListener {
 			pwPassword.setText("");
 		} else if("Login".equals(aKey)) {
 			String myPassword = new String(pwPassword.getPassword());
-			connectDB("jdbc:postgresql://localhost/ueab", tfUserName.getText(), myPassword);
+			connectDB("jdbc:postgresql://localhost/machine", tfUserName.getText(), myPassword);
 			
 			if(db == null) {
 				clearStatus.setText("Login error");

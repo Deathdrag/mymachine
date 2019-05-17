@@ -1,0 +1,43 @@
+#JSGF V1.0;
+
+grammar dialog;
+
+<digit> = oh    |
+          zero  |
+          one   |
+          two   |
+          three |
+          four  |
+          five  |
+          six   |
+          seven |
+          eight |
+          nine  ;
+
+<number> = <digit>+ [point <digit>+];
+
+<menu_command> =  digits                     |
+                  [go to [the]] bank account |
+                  weather forecast           |
+                  exit program ;
+
+<bank_command> = [show | check] balance |
+                 deposit <number>       |
+                 withdraw <number>      |
+                 back                   ;
+
+<message_command> = 	open chat box |
+                 	close chat box|
+                 	send message |
+			list contacts |
+			new contact |
+			update contact |
+			delete contact |
+                 	delete message ;
+
+<mpesa_command> = 	[show | check] balance |
+			deposit <number>       |
+                 	withdraw <number>      |
+                 	back                   ;
+
+public <command> = <menu_command> | <bank_command> | <mpesa_command> | <message_command>;
